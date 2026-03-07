@@ -24,12 +24,12 @@ def get_drive_service():
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
+            os.environ['GOOGLE_TOKEN_JSON'] = creds.to_json()
         else:
-            print("Authentication required. Opening browser...")
-            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
+            raise RuntimeError("No valid credentials found. Please authenticate with Google Drive.")
             
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
+        if not token_json_str:
+            with open('token.json', 'w') as token:
+                token.write(creds.to_json())
             
     return build('drive', 'v3', credentials=creds)
