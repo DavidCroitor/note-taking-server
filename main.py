@@ -19,6 +19,10 @@ app = FastAPI(
 app.state.limiter = notes.limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+@app.get("/healthz", dependencies=[])
+async def health_check():
+    return {"status": "ok"}
+
 app.include_router(folders.router)
 app.include_router(notes.router)
 
