@@ -37,21 +37,21 @@ All endpoints require an API key passed as a request header: X-API-Key: your_sec
 ---
 
 ## Project structure
-
-+ root/
-    + routers/
-        + folders.py
-        + notes.py
-    + services/
-        + gemini_service.py
-        + google_auth.py
-        + google_drive.py
-    + main.py
-    + schemas.py
-    + security.py
+```
+├── root/
+│    ├── routers/
+│    │   ├── folders.py
+│    │   └── notes.py
+│    ├── services/
+│    │   ├── gemini_service.py
+│    │   ├── google_auth.py
+│    │   └── google_drive.py
+│    ├── main.py
+│    ├── schemas.py
+│    └── security.py
+```
 
 ---
-
 
 ## API Overview
 
@@ -80,15 +80,18 @@ Response:
 **Parameters**: None
 **Rate limit**: No
 **Response (200 OK)**: 
+```
 {
 	"status" : "ok"
 }
+```
 
 ### GET /folders
 **Description**: Retrieves top layer folders
 **Parameters**: None
 **Rate limit**: No
 **Response (200 OK)**:
+```
 {
 	"folders" : \[
 		{
@@ -97,6 +100,8 @@ Response:
 		}
 	]
 }
+```
+
 **Errors**:
 401 - Missing Token
 
@@ -109,9 +114,9 @@ Response:
 | folder_id  | string       | Yes      | Google Drive Folder Id(alphanumeric) to retrieve subfolders for |
 
 **Rate limit**: No
-  
 
 **Response (200 OK)**:
+```
 {
 	"subfolders" : \[
 		{
@@ -128,11 +133,12 @@ Response:
 		}
 	]
 }
+```
+
 **Errors** :
 404 - Folder Not Found
 401 - Missing Token
 
-  
 
 ### POST /notes
 **Description**: Creates a markdown note from text
@@ -146,9 +152,11 @@ Response:
 
 **Rate limit**: No
 **Response (200 OK)**:
+```
 { 
 	"id":  "1mljhtss0XRA5nFMdKvBdBZjgmUUqptlbs" 
 }
+```
 
 **Errors**
 400 - Folder not set in parameters or env var
@@ -170,12 +178,14 @@ Response:
 **Max size per file**: 10 MB
 
 **Response (200 OK)**:
+```
 {
 	"message":  "Note created successfully from the images",
 	"file_id": "1mljhtss0XRA5nFMdKvBdBZjgmUUqptlbs",
 	"images processed": 3,
 	"markdown_preview": "First 300 characters of the resulting note ..."
 }
+```
 
 **Errors**
 400 - Folder not set in parameters or env var; File has unsupported type
