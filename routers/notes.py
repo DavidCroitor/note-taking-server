@@ -79,8 +79,8 @@ def create_note(request: NoteRequest):
 @limiter.limit("10/minute")
 async def create_note_from_images(
     request: Request,
-    files: List[UploadFile] = File(..., description="One or more handwritten note photos"),
     filename: str = Form(..., description="Name for the resulting markdown file"),
+    files: List[UploadFile] = File(..., description="One or more handwritten note photos"),
     folder_id: str = Form(None, description="Google Drive folder ID")
 ):
     image_inputs = await validate_and_read_files(files)

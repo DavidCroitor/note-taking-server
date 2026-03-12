@@ -1,7 +1,7 @@
 import io
 import os
 from fastapi import HTTPException
-from googleapiclient.http import MediaIoBaseUpload
+from googleapiclient.http import HttpError, MediaIoBaseUpload
 
 from services.google_auth import get_drive_service
 
@@ -33,6 +33,10 @@ def list_subfolders(folder_id: str):
         results = drive_service.files().list(q=query, fields="files(id, name)").execute()
         subfolders = [f for f in results.get('files', []) if f['name'] not in IGNORED_FOLDERS]
         return {"subfolders": subfolders}
+    except HttpError as e:
+        if e.resp.status == 404:
+            raise HTTPException(status_code=404, detail="Folder not found")
+        raise HTTPException(status_code=e.resp.status, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -51,6 +55,10 @@ def upload_file_to_drive(file_name: str, content: str, folder_id: str) -> str:
         )
         file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
         return file.get('id')
+    except HttpError as e:
+        if e.resp.status == 404:
+            raise HTTPException(status_code=404, detail="Folder not found")
+        raise HTTPException(status_code=e.resp.status, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
@@ -80,6 +88,10 @@ def save_photo_to_drive(file_name: str, content: bytes, content_type: str) -> di
         return {
             'id': file_id
         }
+    except HttpError as e:
+        if e.resp.status == 404:
+            raise HTTPException(status_code=404, detail="Folder not found")
+        raise HTTPException(status_code=e.resp.status, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
