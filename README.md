@@ -247,7 +247,9 @@ The server will be available at `http://localhost:8000`.
 
 **Input photos**:
 
-![[20260304_153756.jpg|210]]![[20260304_153804.jpg|210]]![[20260304_153838.jpg|210]]
+![Input 1 | 200](20260304_153756.jpg)
+![Input 2 | 200](20260304_153804.jpg)
+![Input 3 | 200](20260304_153838.jpg)
 
 **Output**:
 # Ioan 8:1-30
