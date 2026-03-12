@@ -107,6 +107,7 @@ Response:
 | Name       | Type         | Required | Description                                                     |
 | ---------- | ------------ | -------- | --------------------------------------------------------------- |
 | folder_id  | string       | Yes      | Google Drive Folder Id(alphanumeric) to retrieve subfolders for |
+
 **Rate limit**: No
   
 
@@ -142,15 +143,18 @@ Response:
 | filename   | string       | Yes       | Name of the resulting markdown file                                                                           |
 | content    | string       | Yes       | Content of the note                                                                                           |
 | folder_id  | string       | No        | Google Drive ID(alphanumeric) in which to save the note (Default Folder ID is set as an environment variable) |
+
 **Rate limit**: No
 **Response (200 OK)**:
 { 
 	"id":  "1mljhtss0XRA5nFMdKvBdBZjgmUUqptlbs" 
 }
+
 **Errors**
 400 - Folder not set in parameters or env var
 404 - Folder Not Found
 401 - Missing Token
+
 ### POST /notes/from-images
 **Description**: Converts images of handwriting to structured markdown note
 **Body parameters**:
@@ -160,6 +164,7 @@ Response:
 | filename   | string         | Yes       | Name of the resulting markdown file                                                                           |
 | files      | List \<File>   | Yes       | Photos(JPEG, PNG, WebP) of handwritten notes                                                                  |
 | folder_id  | string         | No        | Google Drive ID(alphanumeric) in which to save the note (Default Folder ID is set as an environment variable) |
+
 **Rate limit**: 10 requests/minute per IP
 **Max number of files**: 15
 **Max size per file**: 10 MB
