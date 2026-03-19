@@ -291,3 +291,11 @@ The server will be available at `http://localhost:8000`.
 **(v. 28)** Momentul crucificării i-a făcut pe mulți să înțeleagă cine este Isus
 
 **(v. 29)** Tatăl și Fiul sunt într-o unitate perfectă, având aceeași voință.
+
+---
+
+## Future Work
+
+- **Multiple User Support**: Transition from a single-user API key to multi-users with individual accounts and authentication.
+- **Dynamic Token Management**:Implement a database-backed session management system to handle multiple Google Drive tokens securely.
+- **Note Retrieval**: Add note retrieval

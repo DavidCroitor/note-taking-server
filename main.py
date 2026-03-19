@@ -1,3 +1,5 @@
+import os
+
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, Request
 
@@ -8,7 +10,12 @@ from slowapi.errors import RateLimitExceeded
 from security import verify_api_key
 from routers import folders, notes
 
+import logging
+
 load_dotenv()
+
+LOG_LEVEL = logging.DEBUG if os.getenv('ENVIRONMENT') == 'development' else logging.INFO
+logging.basicConfig(level=LOG_LEVEL, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 app = FastAPI(
     dependencies=[Depends(verify_api_key)],
