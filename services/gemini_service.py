@@ -4,6 +4,10 @@ import os
 from google import genai
 from google.genai import types
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 TRANSCRIPTION_PROMPT = (
     "You are a note transcription assistant. "
@@ -18,8 +22,12 @@ def get_gemini_client():
     return genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
 
 async def transcribe_images_to_markdown(image_inputs: list[dict]) -> str:
+    logger.info("Initializing Gemini client for image transcription.")
     client = get_gemini_client()
-    
+    logger.info("Gemini client initialized successfully.")
+
+    logger.info(f"Preparing contents for {len(image_inputs)} images.")
+
     contents = []
 
     for image in image_inputs:
@@ -35,24 +43,28 @@ async def transcribe_images_to_markdown(image_inputs: list[dict]) -> str:
     
     contents.append(TRANSCRIPTION_PROMPT)
 
+    logger.info("Sending request to Gemini for content generation.")
     try:
         response = client.models.generate_content(
             model="gemini-3-flash-preview",
             contents=contents,
             config=types.GenerateContentConfig(
                 temperature=0.1,
-                max_output_tokens=8192,
+                max_output_tokens=12000,
             )
         )
+
+        logger.info("Received response from Gemini successfully. Markdown length: %d characters.", len(response.text))
     except Exception as e:
-        print(f"Primary model 'gemini-3-flash-preview' failed: {e}. Falling back to 'gemini-3.1-flash-lite-preview'.")
+        logger.warning("Primary model 'gemini-3-flash-preview' failed: %s. Falling back to 'gemini-3.1-flash-lite-preview'.", e)
         response = client.models.generate_content(
             model="gemini-3.1-flash-lite-preview",
             contents=contents,
             config=types.GenerateContentConfig(
                 temperature=0.1,
-                max_output_tokens=8192,
+                max_output_tokens=12000,
             )
         )
+        logger.info("Received fallback response from Gemini successfully. Markdown length: %d characters.", len(response.text))
 
     return response.text.strip()
