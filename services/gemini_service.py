@@ -17,6 +17,7 @@ TRANSCRIPTION_PROMPT = (
     "Use appropriate Markdown elements such as headings, bullet points, numbered lists, bold/italic text, and code blocks where relevant. "
     "Do not add any commentary — output only the Markdown content."
 )
+MAX_OUTPUT_TOKENS = 16384
 
 def get_gemini_client():
     return genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
@@ -50,11 +51,11 @@ async def transcribe_images_to_markdown(image_inputs: list[dict]) -> str:
             contents=contents,
             config=types.GenerateContentConfig(
                 temperature=0.1,
-                max_output_tokens=12000,
+                max_output_tokens=MAX_OUTPUT_TOKENS,
             )
         )
 
-        logger.info("Received response from Gemini successfully. Markdown length: %d characters.", len(response.text))
+        logger.info("Received response from Gemini successfully. Markdown length: %d characters. %d Token used", len(response.text), response.token_usage.total)
     except Exception as e:
         logger.warning("Primary model 'gemini-3-flash-preview' failed: %s. Falling back to 'gemini-3.1-flash-lite-preview'.", e)
         response = client.models.generate_content(
@@ -62,7 +63,7 @@ async def transcribe_images_to_markdown(image_inputs: list[dict]) -> str:
             contents=contents,
             config=types.GenerateContentConfig(
                 temperature=0.1,
-                max_output_tokens=12000,
+                max_output_tokens=MAX_OUTPUT_TOKENS,
             )
         )
         logger.info("Received fallback response from Gemini successfully. Markdown length: %d characters.", len(response.text))
