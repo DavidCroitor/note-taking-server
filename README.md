@@ -173,9 +173,8 @@ Response:
 | files      | List \<File>   | Yes       | Photos(JPEG, PNG, WebP) of handwritten notes                                                                  |
 | folder_id  | string         | No        | Google Drive ID(alphanumeric) in which to save the note (Default Folder ID is set as an environment variable) |
 
-**Rate limit**: 10 requests/minute per IP
-**Max number of files**: 15
-**Max size per file**: 10 MB
+**Rate limit**: 5 requests/minute per IP
+**Max size per request**: 19 MB
 
 **Response (200 OK)**:
 ```
@@ -189,7 +188,7 @@ Response:
 
 **Errors**
 400 - Folder not set in parameters or env var; File has unsupported type
-413 - Too many files uploaded; File exceeds maximum size
+413 - Payload request exceeds maximum size
 404 - Folder Not Found
 401 - Missing Token
 500 - Gemini Transcription Failed
@@ -204,10 +203,9 @@ Response:
 | ------------------------ | -------- | ------------------------------------------------------------------ |
 | DEFAULT_FOLDER_ID        | No       | Default folder if folder id not set in body parameters             |
 | DEFAULT_PHOTO_FOLDER_ID  | No       | Folder to save photos received in requests                         |
-| GOOGLE_TOKEN_JSON        | YES      | Token used to access Google Drive(file path or a stringified JSON) |
-| GOOGLE_CREDENTIALS_JSON  | YES      | Credentials used to request access to Google Drive                 |
 | MY_SECRET_KEY_API_KEY    | YES      | API Key to restrict access to only one user                        |
 | GEMINI_API_KEY           | YES      | API Key to access the Gemini Services                              |
+| GOOGLE_TOKE_PATH         | YES      | Path to `token.json` in secrets 								   | 
 
 
 ---
@@ -299,3 +297,4 @@ The server will be available at `http://localhost:8000`.
 - **Multiple User Support**: Transition from a single-user API key to multi-users with individual accounts and authentication.
 - **Dynamic Token Management**:Implement a database-backed session management system to handle multiple Google Drive tokens securely.
 - **Note Retrieval**: Add note retrieval
+- **Self hosted LLM**: Switch from Gemini API to Self-Hosted LLM

@@ -98,7 +98,7 @@ def create_note(request: NoteRequest):
 
 
 @router.post("/from-images")
-@limiter.limit("10/minute")
+@limiter.limit("5/minute")
 async def create_note_from_images(
     request: Request,
     filename: str = Form(..., description="Name for the resulting markdown file"),
