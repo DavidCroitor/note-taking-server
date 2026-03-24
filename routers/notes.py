@@ -24,17 +24,12 @@ router = APIRouter(prefix="/notes", tags=["notes"])
 
 ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
-MAX_FILES = 15
-
+MAX_BUDGET_BYTES = 19 * 1024 * 1024
 
 async def validate_and_read_files(files: List[UploadFile]) -> List[dict]:
     logger.debug(f"Validating {len(files)} uploaded files.")
-    if len(files) > MAX_FILES:
-        logger.warning(f"Too many files uploaded: {len(files)}. Maximum allowed is {MAX_FILES}.")
-        raise HTTPException(status_code=413, detail=f"Too many files uploaded. Maximum allowed: {MAX_FILES}")
-
     image_inputs = []
+    total_size = 0
     for file in files:
         if file.content_type not in ALLOWED_IMAGE_TYPES:
             logger.warning(f"Unsupported file type: {file.content_type} for file '{file.filename}'. Allowed types: {ALLOWED_IMAGE_TYPES}")
@@ -43,12 +38,15 @@ async def validate_and_read_files(files: List[UploadFile]) -> List[dict]:
                 detail=f"File '{file.filename}' has unsupported type '{file.content_type}'. Allowed: {ALLOWED_IMAGE_TYPES}"
             )
         content = await file.read()
-        if len(content) > MAX_FILE_SIZE:
-            logger.warning(f"File '{file.filename}' exceeds maximum size: {len(content)} bytes. Limit is {MAX_FILE_SIZE} bytes.")
+        total_size += len(content)
+        
+        if total_size > MAX_BUDGET_BYTES:
+            logger.warning(f"Total payload size exceeds maximum limit of {MAX_BUDGET_BYTES} bytes.")
             raise HTTPException(
                 status_code=413,
-                detail=f"File '{file.filename}' exceeds the maximum size of {MAX_FILE_SIZE} bytes."
+                detail=f"Total file size exceeds the maximum budget of {MAX_BUDGET_BYTES} bytes."
             )
+            
         image_inputs.append({"filename": file.filename, "content": content, "content_type": file.content_type})
     logger.debug(f"All files validated successfully. Total valid files: {len(image_inputs)}.")
     return image_inputs
@@ -100,13 +98,21 @@ def create_note(request: NoteRequest):
 
 
 @router.post("/from-images")
-@limiter.limit("10/minute")
+@limiter.limit("5/minute")
 async def create_note_from_images(
     request: Request,
     filename: str = Form(..., description="Name for the resulting markdown file"),
     files: List[UploadFile] = File(..., description="One or more handwritten note photos"),
     folder_id: str = Form(None, description="Google Drive folder ID")
 ):
+    content_length = request.headers.get('Content-Length')
+    if content_length and int(content_length) > MAX_BUDGET_BYTES:
+        logger.warning(f"Request payload size {content_length} exceeds maximum limit of {MAX_BUDGET_BYTES} bytes.")
+        raise HTTPException(
+            status_code=413,
+            detail=f"Total file size exceeds the maximum budget of {MAX_BUDGET_BYTES} bytes."
+        )
+
     logger.info("Received request to create note from %d image(s). Filename: '%s'.", len(files), filename)
     image_inputs = await validate_and_read_files(files)
 
