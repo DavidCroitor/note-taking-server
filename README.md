@@ -205,7 +205,7 @@ Response:
 | DEFAULT_PHOTO_FOLDER_ID  | No       | Folder to save photos received in requests                         |
 | MY_SECRET_KEY_API_KEY    | YES      | API Key to restrict access to only one user                        |
 | GEMINI_API_KEY           | YES      | API Key to access the Gemini Services                              |
-| GOOGLE_TOKE_PATH         | YES      | Path to `token.json` in secrets 								   | 
+| GOOGLE_TOKEN_PATH        | YES      | Path to `token.json` in secrets 								   | 
 
 
 ---
