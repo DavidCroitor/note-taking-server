@@ -55,7 +55,7 @@ async def transcribe_images_to_markdown(image_inputs: list[dict]) -> str:
             )
         )
 
-        logger.info("Received response from Gemini successfully. Markdown length: %d characters. %d Token used", len(response.text), response.token_usage.total)
+        logger.info("Received response from Gemini successfully. Markdown length: %d characters.", len(response.text))
     except Exception as e:
         logger.warning("Primary model 'gemini-3-flash-preview' failed: %s. Falling back to 'gemini-3.1-flash-lite-preview'.", e)
         response = client.models.generate_content(
